@@ -17,6 +17,6 @@ public interface CatRepository extends JpaRepository<Cat, Long> {
     @Query(value = "select * from cats c where c.description like %?1%", nativeQuery = true)
     List<Cat> getCatByDescription(String description);
 
-    @Query(value = "select * from cats c where c.breed like %?1%", nativeQuery = true)
+    @Query(value = "select * from cats c where c.age like %?1%", nativeQuery = true)
     List<Cat> getCatByAge(int age);
 }
