@@ -1,74 +1,73 @@
 package com.example.demo;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@Controller
+@RequestMapping("/cats")
 public class CatController {
 
     @Autowired
     private CatService catService;
 
-    @GetMapping("/cats")   
-    public Object getAllCats() {
-        return catService.getAllCats();
+    @GetMapping
+    public Object getAllCats(Model model) {
+        model.addAttribute("catslist", catService.getAllCats());
+        model.addAttribute("Title", "AllCats");
+        return "cat-list";
     }
 
-    @GetMapping("/cats/{catId}")
-    public Cat getCatById(@PathVariable Long catId) {
-        return catService.getCatById(catId);
+    @GetMapping("/{catId}")
+    public Object getCatById(@PathVariable Long catId, Model model) {
+        model.addAttribute("cat", catService.getCatById(catId));
+        model.addAttribute("Title", "Cat #" + catId);
+        return "cat-details";
     }
 
-    @GetMapping("/cats/name/{name}")
-    public Object getCatByName(@PathVariable String name) {    
-        return catService.getCatByName(name);
+    @GetMapping("/new")
+    public Object showCreateForm(Model model) {
+        Cat cat = new Cat();
+        model.addAttribute("cat", cat);
+        model.addAttribute("Title", "Create New Cat");
+        return "cat-create";
     }
 
-    @GetMapping("/cats/description/{description}")
-    public Object getCatByDescription(@PathVariable String description) {
-        return catService.getCatByDescription(description);
+    @GetMapping("/edit/{catId}")
+    public Object showUpdateForm(@PathVariable Long catId, Model model) {
+        model.addAttribute("cat", catService.getCatById(catId));
+        return "cat-update";
     }
 
-    @GetMapping("/cats/breed/{breed}")
-    public Object getCatByBreed(@PathVariable String breed) {
-        return catService.getCatByBreed(breed);
+    @PostMapping("/new")
+    public Object createCat(@ModelAttribute Cat cat, Model model) {
+        try {
+            Cat newCat = catService.addCat(cat);
+            return "redirect:/cats";
+        } catch (Exception e) {
+            model.addAttribute("error", "Failed to create cat");
+            return "cat-create";
+        }
     }
 
-    @GetMapping("/cats/age/{age}")
-    public Object getCatByAge(@PathVariable int age) {
-        return catService.getCatByAge(age);
+    @PostMapping("/update")
+    public Object updateCat(@ModelAttribute Cat cat) {
+        catService.updateCat(cat.getCatId(), cat);
+        return "redirect:/cats/" + cat.getCatId();
     }
 
-    @PostMapping("/cats")
-    public Object addCat(@RequestBody Cat cat) {
-        return catService.addCat(cat);
-    }
-
-    @PutMapping("/cats/{catId}")
-    public Cat updateCat(@PathVariable Long catId, @RequestBody Cat cat) {
-        return catService.updateCat(catId, cat);
-    }
-
-    @DeleteMapping("/cats/{catId}")
+    @GetMapping("/delete/{catId}")
     public Object deleteCat(@PathVariable Long catId) {
         catService.deleteCat(catId);
-        return catService.getAllCats();
+        return "redirect:/cats";
     }
-
-    @PostMapping("/cats/write")    
-    public Object writeJson(@RequestBody Cat cat) {
-        catService.writeJson(cat);
-        return catService.writeJson(cat);
-    }
-
-    @GetMapping("/cats/read")
-    public Object readJson() {
-        return catService.readJson();
-    }  
 }
