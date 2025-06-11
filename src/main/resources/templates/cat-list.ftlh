@@ -24,7 +24,7 @@
             <tbody>
                 <#list catslist as cat>
                     <tr>
-                        <td>${cat.cat}</td>
+                        <td>${cat.catId}</td>
                         <td>${cat.breed}</td>
                         <td>${(cat.description!"")?substring(0, [50, cat.description?length]?min)}<#if
                                 (cat.description!"")?length gt 50>...</#if>

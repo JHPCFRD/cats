@@ -60,25 +60,4 @@ public class CatService {
     public void deleteCat(Long catId) {
         catRepository.deleteById(catId);
     }
-
-    public Object writeJson(Cat cat) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            objectMapper.writeValue(new File("cats.json"), cat);
-            return "Cat written to JSON file successfully.";
-        } catch (IOException e) {
-            e.pringStackTrace();
-            return "Error writing cat to JSON file";
-        }
-    }
-
-    public Object readJson() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            return objectMapper.readValue(new File("cats.json"), Cat.class);
-        } catch (IOException e) {
-            e.pringStackTrace();
-            return null;
-        }
-    }
 }
